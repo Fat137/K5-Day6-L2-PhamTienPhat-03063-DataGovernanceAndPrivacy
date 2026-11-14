@@ -1,0 +1,7 @@
+ts,scope,status,canonical,reason_code,reason,owner,evidence
+2026-11-14T08:17:01+00:00,t08,HOLD,HOLD,PENDING_HUMAN_REVIEW,56 exceptions await reviewer approval (out/review_queue.csv),Phạm Tiến Phát,out\poc\review_queue.csv
+2026-11-14T08:31:27+00:00,t08,HOLD,HOLD,PENDING_HUMAN_REVIEW,56 exceptions await reviewer approval (out/review_queue.csv),Phạm Tiến Phát,out\poc\review_queue.csv
+2026-11-14T08:32:15+00:00,t08,GO,GO,ALL_EXCEPTIONS_REVIEWED,every exception has a reviewer decision; deletions may be executed,Phạm Tiến Phát,out\poc\actions.csv;out\poc\audit_log.jsonl
+2026-11-14T08:41:07+00:00,t08,GO,GO,ALL_EXCEPTIONS_REVIEWED,every exception has a reviewer decision; deletions may be executed,Phạm Tiến Phát,out\poc\actions.csv;out\poc\audit_log.jsonl
+2026-11-14T08:42:32+00:00,t08,GO,GO,ALL_EXCEPTIONS_REVIEWED,every exception has a reviewer decision; deletions may be executed,Phạm Tiến Phát,out\poc\actions.csv;out\poc\audit_log.jsonl
+2026-11-14T08:54:04+00:00,t08,GO,GO,ALL_EXCEPTIONS_REVIEWED,every exception has a reviewer decision; deletions may be executed,Phạm Tiến Phát,out\poc\actions.csv;out\poc\audit_log.jsonl
