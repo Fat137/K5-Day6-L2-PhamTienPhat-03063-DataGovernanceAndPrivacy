@@ -14,7 +14,7 @@
 | Git URL | https://github.com/Fat137/K5-Day6-L2-PhamTienPhat-03063-DataGovernanceAndPrivacy |
 | Tag `demo-180m` (commit) | `2317799` (2026-11-14) |
 | Tag `final-24h` (commit) | ____ |
-| Deadline (giờ VN) | 2026-11-15 17:00 (UTC+7) |
+| Deadline (giờ VN) | 2026-11-15 12:00 (UTC+7) |
 
 ## 01 · Problem statement
 
