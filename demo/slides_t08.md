@@ -56,4 +56,4 @@ Metric chính thức (Deletion Completeness, False-delete) cần `gt/` của gi�
 - "Che mặt" mới là ghi chú — chưa có redaction thật (T07)
 - Xóa mock ≠ xóa thật: backup bất biến, cache, model đã train
 - Cần DPO/legal xác nhận; không tuyên bố đạt GDPR / Luật 91/2025
-- Tái lập: 1 lệnh, offline, seed 42 · `pytest`: 18 test T08 pass · fix lỗi CRLF làm lệch sha256 bằng `.gitattributes`
+- Tái lập: 1 lệnh, offline, seed 42 · `pytest`: 19 test T08 pass · fix lỗi CRLF làm lệch sha256 bằng `.gitattributes`

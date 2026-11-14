@@ -14,7 +14,7 @@
 | Git URL | https://github.com/Fat137/K5-Day6-L2-PhamTienPhat-03063-DataGovernanceAndPrivacy |
 | Tag `demo-180m` (commit) | ____ |
 | Tag `final-24h` (commit) | ____ |
-| Deadline (giờ VN) | ____ |
+| Deadline (giờ VN) | 2026-11-15 17:00 (UTC+7) |
 
 ## 01 · Problem statement
 
@@ -164,7 +164,7 @@ python -m venv .venv
 .venv\Scripts\python.exe -m pytest -q
 ```
 
-- `pytest`: **65 passed, 40 skipped** (toàn repo); `tests/test_t08.py`: **18 passed, 1 skipped**
+- `pytest`: **66 passed, 40 skipped** (toàn repo); `tests/test_t08.py`: **19 passed, 1 skipped**
   (test so với GT chỉ chạy khi có overlay giảng viên). Skip còn lại là test hạ tầng cần GT của các track khác.
 - `preflight`: 0 FAIL, 2 WARN (`data/real`, `models_optional/` — tùy chọn).
 - Máy: Windows 11 (10.0.26200), CPU AMD64 Family 25 (AMD), Python 3.13.2 · git sha khi đo: `f24a269`.

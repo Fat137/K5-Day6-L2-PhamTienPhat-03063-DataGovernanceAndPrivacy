@@ -1,6 +1,6 @@
 # Self-check T08 · Baseline vs PoC (không dùng ground truth)
 
-Sinh bởi `python -m tools.self_check_t08` — không sửa tay. Baseline `out/baseline` (git f24a269), PoC `out/poc` (git f24a269), seed 42.
+Sinh bởi `python -m tools.self_check_t08` — không sửa tay. Baseline `out/baseline` (git 9783f03), PoC `out/poc` (git 9783f03), seed 42.
 Metric chính thức (`Deletion Completeness`, `False-delete count`) cần `gt/` của giảng viên — xem `src.evaluate`.
 
 | Chỉ số (không cần GT) | Baseline | PoC | Tốt hơn |
@@ -13,8 +13,8 @@ Metric chính thức (`Deletion Completeness`, `False-delete count`) cần `gt/`
 | Dòng ngoài phạm vi yêu cầu | 0 | 0 | lower (mục tiêu 0) |
 | Audit coverage (hành động có dòng audit) | 0.0 | 1.0 | higher |
 | Quyết định | HOLD (BASELINE_ONLY) | GO (ALL_EXCEPTIONS_REVIEWED) | — |
-| Runtime (s) | 0.0361 | 0.5441 | lower |
-| Runtime / 100 artefact đầu vào (s) | 0.017 | 0.2567 | lower |
+| Runtime (s) | 0.0323 | 0.3693 | lower |
+| Runtime / 100 artefact đầu vào (s) | 0.0152 | 0.1742 | lower |
 
 ## Slice theo loại artefact (cặp trong phạm vi → được xử lý / bị xóa)
 
