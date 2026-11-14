@@ -19,9 +19,10 @@
 ## 01 · Problem statement
 
 - **Ai bị ảnh hưởng?** Người có dữ liệu bị thu (người đi đường, tài xế trong video dashcam) và công ty vận hành dataset.
-  Xóa thiếu → dữ liệu định danh (ảnh mặt, vector khuôn mặt, backup) vẫn còn sau khi đã báo "đã xóa": vi phạm quyền xóa
-  (GDPR Đ.17, Luật 91/2025). Xóa thừa → mất bằng chứng đang bị giữ theo nghĩa vụ pháp lý, hoặc xóa dữ liệu của người khác.
-  Cả hai lỗi đều **không đảo ngược được**.
+  Xóa thiếu → dữ liệu định danh (ảnh mặt, vector khuôn mặt, backup) vẫn còn sau khi đã báo "đã xóa": có thể vi phạm
+  quyền xóa (GDPR Đ.17, Luật 91/2025) và tiếp tục bị dùng để train cho tới khi phát hiện. Xóa thừa → mất bằng chứng
+  đang bị giữ theo nghĩa vụ pháp lý, hoặc xóa dữ liệu của người khác — lỗi này **không đảo ngược được**, nên được ưu
+  tiên chặn hơn (xóa thiếu còn sửa được ở lần chạy sau).
 - **Điểm nghẽn:** dữ liệu của một người lan qua nhiều bản dẫn xuất (raw → backup, frame → face_crop → embedding,
   annotation, training_export); một số artefact chứa nhiều người; một số đang bị legal hold, không có quyền xóa
   (ACL của vendor) hoặc không rõ nguồn gốc.
@@ -72,7 +73,7 @@
   thuần sẽ xóa dữ liệu của người không yêu cầu. 6 artefact như vậy được ghi vào `excluded_other_subject.csv` + audit.
 - **Thành phần offline:** không dùng model/weights; chỉ pandas + stdlib.
 - **Trade-off đã cân nhắc:**
-  - Hold lan xuống toàn bộ bản dẫn xuất → an toàn tuyệt đối với bằng chứng, nhưng 2 training_export bị giữ vì chứa crop
+  - Hold lan xuống toàn bộ bản dẫn xuất → không bản sao/dẫn xuất nào của bằng chứng bị xóa, nhưng 2 training_export bị giữ vì chứa crop
     từ video bị hold, nên **cả 10 yêu cầu** đều chỉ `partially_fulfilled`. Chọn an toàn vì xóa nhầm không đảo ngược được,
     còn giữ thừa thì xóa được sau khi hết hold.
   - Không cắt budget review: mọi ngoại lệ (56) đều được duyệt, vì bỏ sót 1 legal hold là lỗi không sửa được.
@@ -95,7 +96,7 @@
 | Xóa artefact chứa người khác / ngoài phạm vi | 0 / 0 | 0 / 0 | baseline = 0 vì chỉ xóa raw 1 người |
 | Audit coverage | 0.0 | 1.0 | baseline không ghi audit |
 | Review@B | không có review | 56/56 ngoại lệ được duyệt | B = toàn bộ ngoại lệ |
-| Runtime / 100 artefact đầu vào | 0.017 s | 0.2567 s | chậm hơn ~15× nhưng vẫn < 1 s cho toàn bộ; CPU AMD64, Windows 11, Python 3.13.2 |
+| Runtime / 100 artefact đầu vào | 0.0228 s | 0.2175 s | chậm hơn ~9.5× nhưng vẫn < 1 s cho toàn bộ; dao động giữa các lần chạy; CPU AMD64, Windows 11, Python 3.13.2 |
 
 ## 05 · Evaluation protocol
 
@@ -106,7 +107,9 @@
 - **Độ bất định:** N nhỏ (158 cặp, 56 ngoại lệ) → báo kèm tử/mẫu và Wilson 95% CI.
 - **Rủi ro lệch GT (nói trước, không tune):** GT ẩn có thể coi bản dẫn xuất của video bị hold là `delete` (chỉ giữ đúng
   artefact có cờ hold). Nếu vậy PoC **mất completeness** ở 38 cặp `LEGAL_HOLD_INHERITED` nhưng **không** phát sinh
-  false-delete. Tương tự 12 cặp `MULTI_SUBJECT` và 1 cặp ACL vendor đang `escalate`.
+  false-delete. Tương tự, nếu GT coi 12 cặp `MULTI_SUBJECT` hoặc 1 cặp ACL vendor là `delete`, PoC (đang `escalate`)
+  mất completeness ở các cặp đó; ngược lại 3 embedding `UNKNOWN_ORIGIN` mà reviewer cho xóa sẽ thành false-delete nếu GT
+  coi là `escalate` — đây là rủi ro do quyết định của con người, đã ghi lý do trong `reports/review_queue.csv`.
 - Lệnh evaluate chính xác (giảng viên chạy):
   `python -m src.evaluate --track t08 --pred out/poc/actions.csv --run-name poc --out reports/metrics_poc.json`
   (và tương tự cho `out/baseline/actions.csv`, rồi `python -m src.compare ...`).
@@ -132,7 +135,7 @@
   Root cause: không truy `parent_ids`. Tổng cộng baseline chỉ chạm 10/158 cặp. Test `test_poc_traces_lineage_beyond_raw_video`.
 - **Bẫy lineage (PoC xử lý đúng):** frame `a0011` thuộc video của subj_00 nhưng chứa subj_01 → được tìm thấy nhờ quét
   `subject_ids` chứ không chỉ đi xuống từ video của subj_01; con `a0012/a0013` của nó chỉ là subj_00 → loại, không xóa.
-- **Latency:** PoC 0.5441 s cho cả 10 request (212 artefact) — xem `reports/self_check_t08.md`.
+- **Latency:** PoC 0.461 s cho cả 10 request (212 artefact), baseline 0.0484 s — xem `reports/self_check_t08.md`.
 
 ## 07 · Human & decision
 
@@ -167,7 +170,7 @@ python -m venv .venv
 - `pytest`: **66 passed, 40 skipped** (toàn repo); `tests/test_t08.py`: **19 passed, 1 skipped**
   (test so với GT chỉ chạy khi có overlay giảng viên). Skip còn lại là test hạ tầng cần GT của các track khác.
 - `preflight`: 0 FAIL, 2 WARN (`data/real`, `models_optional/` — tùy chọn).
-- Máy: Windows 11 (10.0.26200), CPU AMD64 Family 25 (AMD), Python 3.13.2 · git sha khi đo: `f24a269`.
+- Máy: Windows 11 (10.0.26200), CPU AMD64 Family 25 (AMD), Python 3.13.2 · git sha khi đo: `eb4db3e` (ghi trong `reports/self_check_t08.json`).
 
 ## 09 · Limitations & ethics
 
@@ -193,7 +196,7 @@ python -m venv .venv
 
 | URL | Ngày xem | 1–2 dòng ý nghĩa |
 |---|---|---|
-| https://eur-lex.europa.eu/eli/reg/2016/679/oj — GDPR Điều 17 (Right to erasure) | ____ | Quyền xóa và ngoại lệ ở khoản 3 (nghĩa vụ pháp lý, khiếu kiện) → căn cứ giữ dữ liệu đang legal hold. |
-| Luật Bảo vệ dữ liệu cá nhân số 91/2025/QH15 — link: ____ | ____ | Quyền xóa dữ liệu của chủ thể và các trường hợp ngoại lệ ở Việt Nam. |
-| Nghị định 356/2025/NĐ-CP — link: ____ | ____ | Hướng dẫn thi hành; cần đối chiếu thời hạn xử lý yêu cầu. |
-| Data Cards Playbook (Google PAIR) — link: ____ | ____ | Ghi lại nguồn gốc / lineage của dataset để truy được bản dẫn xuất khi phải xóa. |
+| https://eur-lex.europa.eu/eli/reg/2016/679/oj — GDPR Điều 17 (Right to erasure) | 2026-11-14 | Quyền xóa và ngoại lệ ở khoản 3 (nghĩa vụ pháp lý, khiếu kiện) → căn cứ giữ dữ liệu đang legal hold. |
+| https://thuvienphapluat.vn/van-ban/Bo-may-hanh-chinh/Luat-Bao-ve-du-lieu-ca-nhan-2025-so-91-2025-QH15-625628.aspx — Luật Bảo vệ dữ liệu cá nhân số 91/2025/QH15 (ban hành 26/06/2025, hiệu lực 01/01/2026) | 2026-11-14 | Quyền xóa dữ liệu của chủ thể và các trường hợp ngoại lệ ở Việt Nam (handout T08 §8). |
+| https://thuvienphapluat.vn/van-ban/Quyen-dan-su/Nghi-dinh-356-2025-ND-CP-huong-dan-Luat-Bao-ve-du-lieu-ca-nhan-687428.aspx — Nghị định 356/2025/NĐ-CP (31/12/2025, thay Nghị định 13/2023) | 2026-11-14 | Quy định chi tiết thi hành Luật 91/2025; cần DPO đối chiếu thời hạn và thủ tục xử lý yêu cầu xóa. |
+| https://sites.research.google/datacardsplaybook/ — Data Cards Playbook (Google PAIR) | 2026-11-14 | Ghi lại nguồn gốc / lineage của dataset để truy được bản dẫn xuất khi phải xóa. |
