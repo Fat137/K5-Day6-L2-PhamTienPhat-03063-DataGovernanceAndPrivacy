@@ -13,7 +13,7 @@
 | Thành viên + vai trò | Phạm Tiến Phát — đảm nhận cả 5 vai trò: Lead/Integrator · Data & fixtures · Core algorithm · QA/metric · Human review + report |
 | Git URL | https://github.com/Fat137/K5-Day6-L2-PhamTienPhat-03063-DataGovernanceAndPrivacy |
 | Tag `demo-180m` (commit) | `2317799` (2026-11-14) |
-| Tag `final-24h` (commit) | ____ |
+| Tag `final-24h` (commit) | commit chứa chính bản report này — kiểm bằng `git rev-list -n 1 final-24h` (2026-11-14) |
 | Deadline (giờ VN) | 2026-11-15 12:00 (UTC+7) |
 
 ## 01 · Problem statement
@@ -190,7 +190,7 @@ python -m venv .venv
 
 | Học viên | Git author | Module / vai trò | Commit SHA | Trình bày? |
 |---|---|---|---|---|
-| Phạm Tiến Phát | Phạm Tiến Phát | Toàn bộ (làm cá nhân): config + metric contract, baseline, pipeline, tests, review, report | `bb57988`, `e41e12a`, `d4c5661`, `f24a269`, `362cc4d`, `9783f03`, `461525b`, `2317799` | có |
+| Phạm Tiến Phát | Phạm Tiến Phát | Toàn bộ (làm cá nhân): config + metric contract, baseline, pipeline, tests, review, report | `bb57988`, `e41e12a`, `d4c5661`, `f24a269`, `362cc4d`, `9783f03`, `461525b`, `2317799`, `eb4db3e`, `7d8f739`, `bc9ac18` + commit gắn tag `final-24h` | có |
 
 ## 11 · References
 

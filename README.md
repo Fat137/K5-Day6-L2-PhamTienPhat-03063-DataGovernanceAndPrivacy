@@ -1,5 +1,27 @@
 # Day 06 · Data Lab · Field-to-Release PoC (AI20K · Data Track)
 
+## Bài nộp · T08 Retention & Delete Request Simulator · Phạm Tiến Phát (03063, làm cá nhân)
+
+| Mục | Giá trị |
+|---|---|
+| Repo | https://github.com/Fat137/K5-Day6-L2-PhamTienPhat-03063-DataGovernanceAndPrivacy |
+| Tag chấm | **`final-24h`** (bản nộp cuối) · `demo-180m` = bản demo |
+| Report | [`reports/group_report.md`](reports/group_report.md) · metric contract [`reports/metric_contract.md`](reports/metric_contract.md) · self-check [`reports/self_check_t08.md`](reports/self_check_t08.md) |
+| Code của bài | [`src/pipeline.py`](src/pipeline.py) (PoC) · [`src/baseline.py`](src/baseline.py) · [`tests/test_t08.py`](tests/test_t08.py) · [`tools/self_check_t08.py`](tools/self_check_t08.py) |
+| Bằng chứng review | [`reports/review_queue.csv`](reports/review_queue.csv) (56 ngoại lệ đã duyệt) · [`reports/decision_log.csv`](reports/decision_log.csv) |
+
+```bash
+python -m src.main --input fixtures/t08_deletion --config configs/lab.yaml --output out/poc --run-name poc --offline --seed 42
+python -m src.main --track t08 --pipeline src.baseline --output out/baseline --run-name baseline --offline --seed 42
+python -m src.evaluate --track t08 --pred out/poc/actions.csv --run-name poc --out reports/metrics_poc.json   # cần gt/ của giảng viên
+pytest -q
+```
+
+Lần chạy đầu cho `HOLD` (56 ngoại lệ chờ duyệt). Để tái hiện bản đã duyệt: chép `reports/review_queue.csv` thành
+`out/poc/review_queue_reviewed.csv` rồi chạy lại lệnh đầu → `GO` + xóa mock. Trên Windows dùng `.venv\Scripts\python.exe`.
+
+---
+
 Starter repo cho bài lab **Data Pipeline, Privacy & Production PoC**: 14 challenge (T01–T14), một contract chung.
 Repo cung cấp **dữ liệu offline + hạ tầng dùng chung + metric chuẩn + template báo cáo** để nhóm tập trung vào phần quan trọng:
 vấn đề, baseline, thuật toán, đánh giá trung thực, human-in-the-loop và quyết định GO/HOLD/REWORK.
