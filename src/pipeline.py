@@ -26,7 +26,7 @@ from collections import defaultdict
 import pandas as pd
 
 from .common.context import RunContext
-from .common.decision import Decision, write_decision
+from .common.decision import DECISION_LOG_COLUMNS, Decision, write_decision
 from .common.io import write_json
 from .common.manifest import verify_manifest
 from .common.review import REVIEW_COLUMNS, load_review_decisions
@@ -47,6 +47,18 @@ POLICY = {
 }
 ACTION_COLUMNS = ["request_id", "artefact_id", "action", "reason_code", "reason", "type", "uri",
                   "subject_ids", "hold_source", "review_status", "score"]
+
+
+BOM = b"\xef\xbb\xbf"
+
+
+def excel_friendly_log(path) -> None:
+    """Make the append-only decision log start with a UTF-8 BOM so Excel shows Vietnamese (owner, reason)
+    correctly. common.decision.write_decision appends to it and skips the header once the file is non-empty."""
+    if not path.exists() or path.stat().st_size == 0:
+        path.write_bytes(BOM + (",".join(DECISION_LOG_COLUMNS) + "\r\n").encode("utf-8"))
+    elif not path.read_bytes().startswith(BOM):
+        path.write_bytes(BOM + path.read_bytes())
 
 
 # ---------------------------------------------------------------- graph helpers
@@ -358,5 +370,6 @@ def run(ctx: RunContext) -> None:
     final[spec.pred_columns + [c for c in final.columns if c not in spec.pred_columns]].to_csv(ctx.out(spec.pred_file), index=False)
     request_summary(final, data["requests"]).to_csv(ctx.out("request_summary.csv"), index=False)
     decision = decide(ctx, final, data["graph_problems"])
+    excel_friendly_log(ctx.out("decision_log.csv"))
     write_decision(decision, ctx.out("decision.json"), ctx.out("decision_log.csv"))
     execute(ctx, final, decision)

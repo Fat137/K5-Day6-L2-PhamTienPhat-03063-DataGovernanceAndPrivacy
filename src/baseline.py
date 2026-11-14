@@ -20,6 +20,7 @@ from .common.context import RunContext
 from .common.decision import Decision, write_decision
 from .common.manifest import verify_manifest
 from .metrics.tracks import get_track
+from .pipeline import excel_friendly_log
 
 
 def load(ctx: RunContext) -> tuple[list[dict], list[dict]]:
@@ -52,6 +53,7 @@ def run(ctx: RunContext) -> None:
     actions = process(artefacts, requests).sort_values(["request_id", "artefact_id"])
     ctx.stats.update(n_items=len(artefacts), n_requests=len(requests), n_actions=len(actions))
     actions.to_csv(ctx.out(spec.pred_file), index=False)
+    excel_friendly_log(ctx.out("decision_log.csv"))
     write_decision(
         Decision(status="HOLD", reason_code="BASELINE_ONLY",
                  reason="Baseline chỉ xóa video raw theo filename, không truy lineage và không kiểm ngoại lệ: không dùng để thực thi",

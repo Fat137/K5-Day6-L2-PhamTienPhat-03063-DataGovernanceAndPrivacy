@@ -207,6 +207,24 @@ def test_edited_queue_is_backed_up_not_overwritten(tmp_path):
     assert "ghi chú viết nhầm" in (out / "review_queue.edited_backup.csv").read_text(encoding="utf-8-sig")
 
 
+def _non_ascii_without_bom(paths) -> list[str]:
+    bom = b"\xef\xbb\xbf"
+    return [str(p) for p in paths if any(c > 127 for c in p.read_bytes()) and not p.read_bytes().startswith(bom)]
+
+
+def test_csv_with_vietnamese_opens_in_excel(tmp_path):
+    """Excel (Windows) mis-reads UTF-8 CSV without a BOM: 'Phạm Tiến Phát' -> 'PhÃ¡ÂºÂ¡m ...'.
+    Every CSV containing non-ASCII text must start with a UTF-8 BOM — generated outputs and committed reports."""
+    out = tmp_path / "poc"
+    assert run_poc(out) == 0
+    review_all(out)
+    assert run_poc(out) == 0 and run_baseline(tmp_path / "baseline") == 0
+    generated = list(out.glob("*.csv")) + list((tmp_path / "baseline").glob("*.csv"))
+    assert any(any(c > 127 for c in p.read_bytes()) for p in generated)          # the check is not vacuous
+    assert _non_ascii_without_bom(generated) == []
+    assert _non_ascii_without_bom(Path("reports").glob("*.csv")) == []
+
+
 # ------------------------------------------------------------------ policy unit tests (synthetic graphs)
 def _art(aid, subjects, parents=(), **kw):
     return {"artefact_id": aid, "type": kw.pop("type", "frame"), "subject_ids": list(subjects), "parent_ids": list(parents),
