@@ -1,0 +1,3 @@
+# Fixtures are verified byte-for-byte against manifest.csv (sha256).
+# Never let Git rewrite their line endings (Git for Windows defaults to core.autocrlf=true).
+fixtures/** -text

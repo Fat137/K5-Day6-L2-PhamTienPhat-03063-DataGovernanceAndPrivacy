@@ -2,15 +2,18 @@
 # Group config — EDIT ME (one per group). Values here override
 # the track defaults loaded from `track_config`.
 # ============================================================
-group_id: G00                     # e.g. G07
-owner: "TODO: tên người ký duyệt (role)"   # mandatory for every Decision
-track_config: tracks/t02.yaml     # pick your challenge: tracks/t01.yaml ... tracks/t14.yaml
-track: t02                        # must match track_config
-input: fixtures/t02_raw_qc        # or data/real/... if your instructor provided a real pack
+group_id: IND-03063               # làm cá nhân (không có nhóm) — MSSV 03063
+owner: "Phạm Tiến Phát"           # mandatory for every Decision
+track_config: tracks/t08.yaml     # T08 · Retention & Delete Request Simulator
+track: t08                        # must match track_config
+input: fixtures/t08_deletion      # synthetic mock graph — không xóa dữ liệu thật
 output: out/
 seed: 42
 offline: true                     # demo/eval must not touch the network
 strict_provenance: true           # fail if manifest.csv hashes do not match
 
 # Track params (merged over track_config.params). Freeze before evaluation.
-params: {}
+params:
+  operator: data-platform         # hệ thống của mình chỉ được xóa artefact có ACL chứa operator này
+  dry_run: false                  # luôn ghi dry_run_plan.csv; xóa mock CHỈ khi decision = GO (mọi ngoại lệ đã được duyệt)
+  hold_propagation: descendants   # legal hold lan xuống toàn bộ bản dẫn xuất (chốt 2026-11-14)
